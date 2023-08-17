@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { fetchPokemonDetails, fetchPokemonImage } from "../api";
+import { useParams, useLocation } from "react-router-dom";
 
 const IMAGE_URL = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/";
 
 function ProductDescriptionPage() {
+  const location = useLocation();
+  console.log(location.state.data, "Uselocation: ");
+  const data = location.state.data;
   const { pokemonName } = useParams();
   const [pokemonDetails, setPokemonDetails] = useState(null);
 
   useEffect(() => {
-    async function fetchData() {
-      const data = await fetchPokemonDetails(pokemonName);
-      setPokemonDetails(data);
+    function fetchData() {
+      const targetPokemon = data.find(
+        (pokemon) => pokemon.name === pokemonName
+      );
+      setPokemonDetails(targetPokemon.details);
     }
     fetchData();
   }, [pokemonName]);
+  console.log(pokemonDetails);
 
   return (
     <div>

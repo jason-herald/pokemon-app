@@ -30,6 +30,7 @@ function ProductListingPage() {
           <Link
             key={pokemon.name}
             to={`/pokemon/${pokemon.name}`}
+            state={{ data: pokemonList }}
             className="pokemon-card"
           >
             <img
