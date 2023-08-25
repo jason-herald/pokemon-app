@@ -1,23 +1,28 @@
-const IMAGE_URL = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/";
-
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import PokemonCard from "./PokemonCard";
 import { fetchPokemonList, fetchPokemonDetails } from "../api";
 import "./ProductListingPage.css";
+
+const IMAGE_URL = import.meta.env.VITE_IMAGE_URL;
 
 function ProductListingPage() {
   const [pokemonList, setPokemonList] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await fetchPokemonList();
-      const pokemonWithDetails = await Promise.all(
-        data.map(async (pokemon) => {
-          const details = await fetchPokemonDetails(pokemon.name);
-          return { ...pokemon, details };
-        })
-      );
-      setPokemonList(pokemonWithDetails);
+      try {
+        const data = await fetchPokemonList();
+        const pokemonWithDetails = await Promise.all(
+          data.map(async (pokemon) => {
+            const details = await fetchPokemonDetails(pokemon.name);
+            return { ...pokemon, details };
+          })
+        );
+        setPokemonList(pokemonWithDetails);
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
     }
     fetchData();
   }, []);
@@ -26,29 +31,17 @@ function ProductListingPage() {
     <div className="pokemon-list-container">
       <h1>Pokémon List</h1>
       <div className="pokemon-card-grid">
-        {pokemonList.map((pokemon) => (
-          <Link
-            key={pokemon.name}
-            to={`/pokemon/${pokemon.name}`}
-            state={{ data: pokemonList }}
-            className="pokemon-card"
-          >
-            <img
-              src={`${IMAGE_URL}${String(pokemon.details.id).padStart(
-                3,
-                "0"
-              )}.png`}
-              alt={pokemon.name}
+        {pokemonList ? (
+          pokemonList?.map((pokemon) => (
+            <PokemonCard
+              key={pokemon.name}
+              pokemon={pokemon}
+              pokemonList={pokemonList}
             />
-            <p>{pokemon.name}</p>
-            {/* <p>Height: {pokemon.details.height}</p>
-            <p>Weight: {pokemon.details.weight}</p> */}
-            <p>
-              Type:{" "}
-              {pokemon.details.types.map((type) => type.type.name).join(", ")}
-            </p>
-          </Link>
-        ))}
+          ))
+        ) : (
+          <p>Couldn't fetch Pokemon data</p>
+        )}
       </div>
     </div>
   );

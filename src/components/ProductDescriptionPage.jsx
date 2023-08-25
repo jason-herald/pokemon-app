@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 
-const IMAGE_URL = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/";
+const IMAGE_URL = import.meta.env.VITE_IMAGE_URL;
 
 function ProductDescriptionPage() {
   const location = useLocation();
@@ -24,7 +24,7 @@ function ProductDescriptionPage() {
   return (
     <div>
       <h1>Pokémon Details</h1>
-      {pokemonDetails && (
+      {pokemonDetails ? (
         <div>
           <h2>{pokemonDetails.name}</h2>
           <img
@@ -39,11 +39,13 @@ function ProductDescriptionPage() {
           <p>Weight: {pokemonDetails.weight}</p>
           <p>Abilities:</p>
           <ul>
-            {pokemonDetails.abilities.map((ability) => (
+            {pokemonDetails.abilities?.map((ability) => (
               <li key={ability.ability.name}>{ability.ability.name}</li>
             ))}
           </ul>
         </div>
+      ) : (
+        <div>Pokemon details not available.</div>
       )}
     </div>
   );
